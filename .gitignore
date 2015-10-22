@@ -1,7 +1,9 @@
 # Created by .ignore support plugin (hsz.mobi)
 ### yyzArch template
 # zsh
-.gradletasknamecache### Windows template
+.gradletasknamecache
+
+### Windows template
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
