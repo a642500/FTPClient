@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
+import me.toxz.ftp.model.User;
 
 public class LoginController {
 
@@ -30,7 +31,8 @@ public class LoginController {
             int portValue = Integer.parseInt(port.getText());
             boolean isAnonymous = anonymous.isSelected();
 
-            application.login();
+            //TODO check valid value
+            application.login(isAnonymous ? User.anonymousOf(hostText, portValue) : User.of(userNameText, passwordText, hostText, portValue));
         }
     }
 
