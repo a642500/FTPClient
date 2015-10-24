@@ -136,6 +136,39 @@ public class FTPClient {
         return stor(new FileInputStream(file), filename);
     }
 
+    private String readIP(String data) throws IOException {
+        String ip = null;
+        int opening = data.indexOf('(');
+        int closing = data.indexOf(')', opening + 1);
+        if (closing > 0) {
+            String dataLink = data.substring(opening + 1, closing);
+            StringTokenizer tokenizer = new StringTokenizer(dataLink, ",");
+            try {
+                ip = tokenizer.nextToken() + "." + tokenizer.nextToken() + "."
+                        + tokenizer.nextToken() + "." + tokenizer.nextToken();
+            } catch (Exception e) {
+                throw new IOException("SimpleFTP received bad data link information: " + data);
+            }
+        }
+        return ip;
+    }
+
+    private int readPort(String data) throws IOException {
+        int port = -1;
+        int opening = data.indexOf('(');
+        int closing = data.indexOf(')', opening + 1);
+        if (closing > 0) {
+            String dataLink = data.substring(opening + 1, closing);
+            StringTokenizer tokenizer = new StringTokenizer(dataLink, ",");
+            try {
+                port = Integer.parseInt(tokenizer.nextToken()) * 256 + Integer.parseInt(tokenizer.nextToken());
+            } catch (Exception e) {
+                throw new IOException("SimpleFTP received bad data link information: " + data);
+            }
+        }
+        return port;
+    }
+
     /**
      * Sends a file to be stored on the FTP server. Returns true if the file
      * transfer was successful. The file is sent in passive mode to avoid NAT or
@@ -153,23 +186,8 @@ public class FTPClient {
                     + response);
         }
 
-        String ip = null;
-        int port = -1;
-        int opening = response.indexOf('(');
-        int closing = response.indexOf(')', opening + 1);
-        if (closing > 0) {
-            String dataLink = response.substring(opening + 1, closing);
-            StringTokenizer tokenizer = new StringTokenizer(dataLink, ",");
-            try {
-                ip = tokenizer.nextToken() + "." + tokenizer.nextToken() + "."
-                        + tokenizer.nextToken() + "." + tokenizer.nextToken();
-                port = Integer.parseInt(tokenizer.nextToken()) * 256
-                        + Integer.parseInt(tokenizer.nextToken());
-            } catch (Exception e) {
-                throw new IOException("SimpleFTP received bad data link information: "
-                        + response);
-            }
-        }
+        String ip = readIP(response);
+        int port = readPort(response);
 
         sendLine("STOR " + filename);
 
