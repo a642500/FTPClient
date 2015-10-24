@@ -20,7 +20,8 @@ public class FTPClientTest {
 
     @Test
     public void testConnect() throws IOException {
-        client.connect("127.0.0.1", 21);
+        client.connect("90.130.70.73", 21);
+        client.list();
     }
 
 }

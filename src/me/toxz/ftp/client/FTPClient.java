@@ -106,11 +106,25 @@ public class FTPClient {
     }
 
 
-//    public synchronized String list() throws IOException {
-//        sendLine("LIST");
-//        String response = readLine();
-//        return "";
-//    }
+    public synchronized String list() throws IOException {
+        sendLine("PASV");
+        String response = readLine();
+        if (!response.startsWith("227 ")) {
+            throw new IOException("SimpleFTP could not request passive mode: "
+                    + response);
+        }
+
+
+        String ip = readIP(response);
+        int port = readPort(response);
+
+        Socket dataSocket = new Socket(ip, port);
+
+        sendLine("LIST");
+        response = readLine();
+        response = readLine();
+        return "";
+    }
 
     /**
      * Changes the working directory (like cd). Returns true if successful.
