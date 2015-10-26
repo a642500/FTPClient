@@ -133,8 +133,29 @@ public class FileExplorerController implements Initializable {
         }
     }
 
-    public void download(ActionEvent event) {
+    public void upload(ActionEvent event) {
+        final LocalFile localFile = localList.getSelectionModel().getSelectedItem();
 
+        Task<Boolean> uploadTask = new Task<Boolean>() {
+            @Override
+            protected Boolean call() throws Exception {
+                application.mClient.stor(localFile.toFile());
+                return true;
+            }
+
+            @Override
+            protected void succeeded() {
+                Log.i(TAG, "success");
+                changeRemoteDirTo(null);
+            }
+
+            @Override
+            protected void failed() {
+                Log.i(TAG, "failed");
+            }
+        };
+        new Thread(uploadTask).start();
+        Log.i(TAG, "start upload");
     }
 
 //    private static class ListViewCellFactory implements javafx.util.Callback<ListView<LocalFile>, ListCell<LocalFile>> {

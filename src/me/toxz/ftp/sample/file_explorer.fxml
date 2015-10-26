@@ -78,7 +78,8 @@
                 </BorderPane>
                 <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1">
                     <children>
-                        <Button mnemonicParsing="false" text="-&gt;" fx:id="uploadBtn" disable="true">
+                        <Button mnemonicParsing="false" text="-&gt;" fx:id="uploadBtn" disable="true"
+                                onAction="#upload">
                             <VBox.margin>
                                 <Insets bottom="4.0"/>
                             </VBox.margin>

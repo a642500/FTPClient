@@ -250,12 +250,13 @@ public class FTPClient {
         String ip = readIP(response);
         int port = readPort(response);
 
-        sendLine("STOR " + filename);
-
         Socket dataSocket = new Socket(ip, port);
 
+        sendLine("STOR " + filename);
+
+
         response = readLine();
-        if (!response.startsWith("125 ")) {
+        if (!response.startsWith("125 ") && !response.startsWith("150 ")) {
             //if (!response.startsWith("150 ")) {
             throw new IOException("SimpleFTP was not allowed to send the file: "
                     + response);
