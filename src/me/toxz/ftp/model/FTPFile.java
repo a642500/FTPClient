@@ -46,6 +46,30 @@ public class FTPFile {
         return ftpFile;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getDir() {
+        return dir;
+    }
+
+    public boolean isDir() {
+        return isDir;
+    }
+
+    public long getSize() {
+        return size;
+    }
+
+    public String getPermission() {
+        return permission;
+    }
+
+    public String getModifiedDate() {
+        return modifiedDate;
+    }
+
     @Override
     public String toString() {
         return name;
