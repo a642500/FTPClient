@@ -6,6 +6,7 @@ import com.sun.javafx.binding.SelectBinding;
 import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.beans.binding.Bindings;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -16,6 +17,7 @@ import me.toxz.ftp.model.User;
 import me.toxz.ftp.util.Log;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
@@ -106,6 +108,15 @@ public class FileExplorerController implements Initializable {
         } else {
             new Thread(new UpdateRemoteListTask(file)).start();
             return true;
+        }
+    }
+
+    public void disconnect(ActionEvent actionEvent) {
+        try {
+            application.mClient.disconnect();
+            application.onDisconnect();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

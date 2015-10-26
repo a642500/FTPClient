@@ -77,6 +77,11 @@ public class Main extends Application {
         gotoFileExplorer();
     }
 
+    void onDisconnect() {
+        gotoLogin();
+        mUser = null;
+    }
+
 
     public static void main(String[] args) {
         launch(args);
