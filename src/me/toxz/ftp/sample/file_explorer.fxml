@@ -39,13 +39,20 @@
                               BorderPane.alignment="CENTER">
                             <children>
                                 <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="322.0">
+                                    <fx:define>
+                                        <ToggleGroup fx:id="methodToggleGroup"/>
+                                    </fx:define>
                                     <children>
-                                        <RadioButton mnemonicParsing="false" text="PRSV">
+                                        <RadioButton mnemonicParsing="false" text="PRSV"
+                                                     toggleGroup="$methodToggleGroup"
+                                                     selected="true"
+                                        >
                                             <HBox.margin>
                                                 <Insets right="4.0"/>
                                             </HBox.margin>
                                         </RadioButton>
-                                        <RadioButton mnemonicParsing="false" text="PORT">
+                                        <RadioButton mnemonicParsing="false" text="PORT"
+                                                     toggleGroup="$methodToggleGroup">
                                             <HBox.margin>
                                                 <Insets left="4.0"/>
                                             </HBox.margin>

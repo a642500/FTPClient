@@ -37,6 +37,7 @@ public class FileExplorerController implements Initializable {
     @FXML Button disconnectBtn;
     @FXML ListView<LocalFile> localList;
     @FXML ListView<FTPFile> remoteList;
+    @FXML ToggleGroup methodToggleGroup;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
