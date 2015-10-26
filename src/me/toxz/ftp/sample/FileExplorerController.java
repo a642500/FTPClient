@@ -2,13 +2,14 @@ package me.toxz.ftp.sample;
 
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
+import com.sun.javafx.binding.SelectBinding;
 import com.sun.javafx.collections.ObservableListWrapper;
+import javafx.beans.binding.Bindings;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
+import javafx.util.Callback;
 import me.toxz.ftp.model.FTPFile;
 import me.toxz.ftp.model.LocalFile;
 import me.toxz.ftp.model.User;
@@ -67,6 +68,7 @@ public class FileExplorerController implements Initializable {
                 }
             }
         });
+//        localList.setCellFactory(new ListViewCellFactory());
 
         changeLocalDirTo(new LocalFile(currentLocalFile));
         changeRemoteDirTo(null);
@@ -105,6 +107,38 @@ public class FileExplorerController implements Initializable {
             return true;
         }
     }
+
+//    private static class ListViewCellFactory implements javafx.util.Callback<ListView<LocalFile>, ListCell<LocalFile>> {
+//
+//        @Override
+//        public ListCell<LocalFile> call(ListView<LocalFile> param) {
+//            ListCell<LocalFile> cell = new ListCell<>();
+//            LocalFile item = cell.
+//
+//
+//            ContextMenu contextMenu = new ContextMenu();
+//            MenuItem downloadItem = new MenuItem();
+//            downloadItem.textProperty().bind(Bindings.createStringBinding(() -> "Download"));
+//            downloadItem.setOnAction(event -> {
+//                addToQueue(item);
+//            });
+//            //TODO  view detail
+//            contextMenu.getItems().add(downloadItem);
+//
+//
+//            cell.textProperty().bind(item == null ? Bindings.createStringBinding(() -> "") : cell.itemProperty().asString());
+//            if (item == null || item.isParent()) {
+//                cell.setContextMenu(null);
+//            } else {
+//                cell.setContextMenu(contextMenu);
+//            }
+//            return cell;
+//        }
+//
+//        private void addToQueue(LocalFile file) {
+//
+//        }
+//    }
 
 
     private class UpdateRemoteListTask extends Task<UpdateRemoteListTask.Result> {
