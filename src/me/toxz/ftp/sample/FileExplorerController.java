@@ -40,6 +40,8 @@ public class FileExplorerController implements Initializable {
     @FXML ListView<LocalFile> localList;
     @FXML ListView<FTPFile> remoteList;
     @FXML ToggleGroup methodToggleGroup;
+    @FXML Button uploadBtn;
+    @FXML Button downloadBtn;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -69,6 +71,17 @@ public class FileExplorerController implements Initializable {
                 if (!changeLocalDirTo(file)) {
                     Log.i(TAG, "double clicked, file: " + file);
                 }
+            }
+        });
+
+        localList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                uploadBtn.setDisable(false);
+            }
+        });
+        remoteList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                downloadBtn.setDisable(false);
             }
         });
 //        localList.setCellFactory(new ListViewCellFactory());
@@ -118,6 +131,10 @@ public class FileExplorerController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void download(ActionEvent event) {
+
     }
 
 //    private static class ListViewCellFactory implements javafx.util.Callback<ListView<LocalFile>, ListCell<LocalFile>> {

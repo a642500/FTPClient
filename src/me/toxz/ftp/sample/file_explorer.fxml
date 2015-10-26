@@ -78,12 +78,12 @@
                 </BorderPane>
                 <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1">
                     <children>
-                        <Button mnemonicParsing="false" text="-&gt;">
+                        <Button mnemonicParsing="false" text="-&gt;" fx:id="uploadBtn" disable="true">
                             <VBox.margin>
                                 <Insets bottom="4.0"/>
                             </VBox.margin>
                         </Button>
-                        <Button mnemonicParsing="false" text="&lt;-">
+                        <Button mnemonicParsing="false" text="&lt;-" fx:id="downloadBtn" disable="true">
                             <VBox.margin>
                                 <Insets top="4.0"/>
                             </VBox.margin>
