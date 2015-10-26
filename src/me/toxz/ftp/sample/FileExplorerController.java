@@ -1,5 +1,6 @@
 package me.toxz.ftp.sample;
 
+import com.sun.istack.internal.Nullable;
 import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -22,7 +23,7 @@ public class FileExplorerController implements Initializable {
     private static final String TAG = "FileExplorerController";
     private Main application;
     private User user;
-    private File currentRemoteDir = new File(System.getProperty("user.dir"));
+    private String currentRemoteDir = "";
 
     @FXML Label localPathText;
     @FXML Label remotePathText;
@@ -47,31 +48,66 @@ public class FileExplorerController implements Initializable {
             if (event.getClickCount() == 2) {
                 FTPFile file = remoteList.getSelectionModel().getSelectedItem();
                 Log.i(TAG, "double clicked: " + file);
+                if (!changeRemoteDirTo(file)) {
+                    Log.i(TAG, "double clicked, file: " + file);
+                }
             }
         });
 
 
-        updateRemoteList();
+        changeRemoteDirTo(null);
     }
 
-    private Task<String> remoteFileListTask = new Task<String>() {
+    private boolean changeRemoteDirTo(@Nullable FTPFile file) {
+        if (file != null && !file.isDir()) {
+            return false;
+        } else {
+            new Thread(new UpdateRemoteListTask(file)).start();
+            return true;
+        }
+    }
+
+    private class UpdateRemoteListTask extends Task<UpdateRemoteListTask.Result> {
+        private final @Nullable FTPFile mFile;
+
+        public UpdateRemoteListTask(@Nullable FTPFile changeTo) {
+            mFile = changeTo;
+        }
+
         @Override
-        protected String call() throws Exception {
-            return application.mClient.list();
+        protected Result call() throws Exception {
+            if (mFile != null && !application.mClient.cwd(mFile.getName())) {
+                failed();
+                return null;
+            } else {
+                String dir = application.mClient.pwd();
+                String list = application.mClient.list();
+                return new Result(dir, list);
+            }
         }
 
         @Override
         protected void succeeded() {
-            remoteList.setItems(new ObservableListWrapper<>(FTPFile.formatAll(this.getValue(), currentRemoteDir.getAbsolutePath())));
+            if (mFile != null) {
+                currentRemoteDir = getValue().dir;
+            }
+            remoteList.setItems(new ObservableListWrapper<>(FTPFile.formatAll(this.getValue().list, currentRemoteDir)));
+            remotePathText.setText(currentRemoteDir);
         }
 
         @Override
         protected void failed() {
             super.failed();
         }
-    };
 
-    private void updateRemoteList() {
-        new Thread(remoteFileListTask).start();
+        public class Result {
+            String dir;
+            String list;
+
+            public Result(String dir, String list) {
+                this.dir = dir;
+                this.list = list;
+            }
+        }
     }
 }
