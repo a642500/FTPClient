@@ -14,6 +14,8 @@ import me.toxz.ftp.util.Log;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Collections;
+import java.util.List;
 import java.util.ResourceBundle;
 
 /**
@@ -88,10 +90,15 @@ public class FileExplorerController implements Initializable {
 
         @Override
         protected void succeeded() {
+            List<FTPFile> ftpFiles = FTPFile.formatAll(this.getValue().list, currentRemoteDir);
             if (mFile != null) {
                 currentRemoteDir = getValue().dir;
+                if (!mFile.isRootFile()) {
+                    ftpFiles.add(FTPFile.getParentFile());
+                }
             }
-            remoteList.setItems(new ObservableListWrapper<>(FTPFile.formatAll(this.getValue().list, currentRemoteDir)));
+            Collections.sort(ftpFiles);
+            remoteList.setItems(new ObservableListWrapper<>(ftpFiles));
             remotePathText.setText(currentRemoteDir);
         }
 
