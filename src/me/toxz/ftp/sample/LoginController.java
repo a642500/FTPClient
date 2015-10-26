@@ -24,10 +24,22 @@ public class LoginController implements Initializable {
     private Main application;
     private User user;
     @FXML Text notificationText;
+    private String oldUserName = "";
 
 
     public void setApp(Main application) {
         this.application = application;
+
+        anonymous.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            userName.setDisable(newValue);
+            password.setDisable(newValue);
+            if (newValue) {
+                oldUserName = userName.getText();
+                userName.setText("anonymous");
+            } else {
+                userName.setText(oldUserName);
+            }
+        });
     }
 
     public void login(ActionEvent actionEvent) {

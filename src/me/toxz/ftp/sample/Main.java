@@ -52,7 +52,7 @@ public class Main extends Application {
     private void gotoLogin() {
         System.out.println("gotoLogin");
         try {
-            LoginController login = (LoginController) replaceSceneContent("Login.fxml");
+            LoginController login = (LoginController) replaceSceneContent("login.fxml");
             login.setApp(this);
             mStage.setTitle("Login");
         } catch (Exception ex) {
