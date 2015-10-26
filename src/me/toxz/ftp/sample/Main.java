@@ -9,6 +9,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import me.toxz.ftp.client.FTPClient;
 import me.toxz.ftp.model.User;
@@ -37,7 +39,7 @@ public class Main extends Application {
         FXMLLoader loader = new FXMLLoader();
         loader.setBuilderFactory(new JavaFXBuilderFactory());
         loader.setLocation(Main.class.getResource(fxml));
-        GridPane pane;
+        Pane pane;
         try (InputStream in = Main.class.getResourceAsStream(fxml)) {
             pane = loader.load(in);
         }

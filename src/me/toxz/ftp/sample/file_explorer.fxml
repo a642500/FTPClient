@@ -6,73 +6,12 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="491.0"
-          prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="me.toxz.ftp.sample.FileExplorerController"
->
-    <columnConstraints>
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-    </columnConstraints>
-    <rowConstraints>
-        <RowConstraints maxHeight="106.0" minHeight="10.0" prefHeight="30.0" valignment="TOP" vgrow="SOMETIMES"/>
-        <RowConstraints maxHeight="106.0" minHeight="10.0" prefHeight="30.0" valignment="TOP" vgrow="SOMETIMES"/>
-        <RowConstraints maxHeight="106.0" minHeight="0.0" prefHeight="28.0" valignment="TOP" vgrow="SOMETIMES"/>
-        <RowConstraints maxHeight="342.0" minHeight="10.0" prefHeight="317.0" vgrow="SOMETIMES"/>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-    </rowConstraints>
+
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+      prefHeight="509.0" prefWidth="629.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="me.toxz.ftp.sample.FileExplorerController">
     <children>
-        <ListView prefHeight="200.0" fx:id="localList" prefWidth="200.0" GridPane.rowIndex="3"/>
-        <ListView prefHeight="200.0" fx:id="remoteList" prefWidth="200.0" GridPane.columnIndex="1"
-                  GridPane.rowIndex="3"/>
-        <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
-            <children>
-                <Label text="Remote:">
-                    <HBox.margin>
-                        <Insets bottom="4.0" left="4.0" right="4.0" top="4.0"/>
-                    </HBox.margin>
-                </Label>
-                <Label id="remotePathText" fx:id="remotePathText" text="\\">
-                    <HBox.margin>
-                        <Insets bottom="4.0" left="4.0" right="4.0" top="4.0"/>
-                    </HBox.margin>
-                </Label>
-            </children>
-        </HBox>
-        <HBox prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="2">
-            <children>
-                <Label text="Local:">
-                    <HBox.margin>
-                        <Insets bottom="4.0" left="4.0" right="4.0" top="4.0"/>
-                    </HBox.margin>
-                </Label>
-                <Label id="localPathText" fx:id="localPathText" text="\\">
-                    <HBox.margin>
-                        <Insets bottom="4.0" left="4.0" right="4.0" top="4.0"/>
-                    </HBox.margin>
-                </Label>
-            </children>
-        </HBox>
-        <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="4">
-            <center>
-                <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-                    <children>
-                        <Label text="Server:">
-                            <HBox.margin>
-                                <Insets bottom="4.0" left="4.0" right="4.0" top="4.0"/>
-                            </HBox.margin>
-                        </Label>
-                        <Label id="currentIPText" fx:id="currentIPText" text="127.0.0.1:25">
-                            <HBox.margin>
-                                <Insets bottom="4.0" left="4.0" right="4.0" top="4.0"/>
-                            </HBox.margin>
-                        </Label>
-                        <Button id="disconnectBtn" fx:id="disconnectBtn" mnemonicParsing="false" text="Disconnect"/>
-                    </children>
-                </HBox>
-            </center>
-        </BorderPane>
-        <MenuBar GridPane.columnSpan="2147483647">
+        <MenuBar prefHeight="25.0" prefWidth="604.0">
             <menus>
                 <Menu mnemonicParsing="false" text="File">
                     <items>
@@ -91,14 +30,114 @@
                 </Menu>
             </menus>
         </MenuBar>
-        <HBox prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="1">
+        <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+                  prefHeight="491.0" prefWidth="600.0">
             <children>
-                <RadioButton mnemonicParsing="false" text="PRSV"/>
-                <RadioButton mnemonicParsing="false" text="PORT"/>
+                <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
+                    <center>
+                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0"
+                              BorderPane.alignment="CENTER">
+                            <children>
+                                <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="322.0">
+                                    <children>
+                                        <RadioButton mnemonicParsing="false" text="PRSV">
+                                            <HBox.margin>
+                                                <Insets right="4.0"/>
+                                            </HBox.margin>
+                                        </RadioButton>
+                                        <RadioButton mnemonicParsing="false" text="PORT">
+                                            <HBox.margin>
+                                                <Insets left="4.0"/>
+                                            </HBox.margin>
+                                        </RadioButton>
+                                    </children>
+                                </HBox>
+                                <Label text="Server:">
+                                    <HBox.margin>
+                                        <Insets bottom="4.0" left="4.0" right="4.0" top="4.0"/>
+                                    </HBox.margin>
+                                </Label>
+                                <Label id="currentIPText" fx:id="currentIPText" text="127.0.0.1:25">
+                                    <HBox.margin>
+                                        <Insets bottom="4.0" left="4.0" right="4.0" top="4.0"/>
+                                    </HBox.margin>
+                                </Label>
+                                <Button id="disconnectBtn" fx:id="disconnectBtn" mnemonicParsing="false"
+                                        text="Disconnect"/>
+                            </children>
+                        </HBox>
+                    </center>
+                </BorderPane>
+                <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1">
+                    <children>
+                        <Button mnemonicParsing="false" text="-&gt;">
+                            <VBox.margin>
+                                <Insets bottom="4.0"/>
+                            </VBox.margin>
+                        </Button>
+                        <Button mnemonicParsing="false" text="&lt;-">
+                            <VBox.margin>
+                                <Insets top="4.0"/>
+                            </VBox.margin>
+                        </Button>
+                    </children>
+                </VBox>
+                <VBox prefHeight="200.0" prefWidth="100.0">
+                    <children>
+                        <HBox prefHeight="31.0" prefWidth="263.0">
+                            <children>
+                                <Label text="Local:">
+                                    <HBox.margin>
+                                        <Insets bottom="4.0" left="4.0" right="4.0" top="4.0"/>
+                                    </HBox.margin>
+                                </Label>
+                                <Label id="localPathText" fx:id="localPathText" text="\\">
+                                    <HBox.margin>
+                                        <Insets bottom="4.0" left="4.0" right="4.0" top="4.0"/>
+                                    </HBox.margin>
+                                </Label>
+                            </children>
+                        </HBox>
+                        <ListView fx:id="localList" prefHeight="465.0" prefWidth="263.0"/>
+                    </children>
+                </VBox>
+                <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="2">
+                    <children>
+                        <HBox prefHeight="24.0" prefWidth="263.0">
+                            <children>
+                                <Label text="Remote:">
+                                    <HBox.margin>
+                                        <Insets bottom="4.0" left="4.0" right="4.0" top="4.0"/>
+                                    </HBox.margin>
+                                </Label>
+                                <Label id="remotePathText" fx:id="remotePathText" text="\\">
+                                    <HBox.margin>
+                                        <Insets bottom="4.0" left="4.0" right="4.0" top="4.0"/>
+                                    </HBox.margin>
+                                </Label>
+                            </children>
+                        </HBox>
+                        <ListView fx:id="remoteList" prefHeight="411.0" prefWidth="263.0"/>
+                    </children>
+                </VBox>
             </children>
-        </HBox>
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="327.0" minWidth="10.0" percentWidth="45.0"
+                                   prefWidth="327.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="188.0" minWidth="30.0" percentWidth="10.0"
+                                   prefWidth="63.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="45.0" prefWidth="100.0"/>
+            </columnConstraints>
+            <padding>
+                <Insets bottom="4.0"/>
+            </padding>
+            <rowConstraints>
+                <RowConstraints maxHeight="432.0" minHeight="10.0" prefHeight="420.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            </rowConstraints>
+            <VBox.margin>
+                <Insets bottom="4.0" left="4.0" right="4.0"/>
+            </VBox.margin>
+        </GridPane>
     </children>
-    <padding>
-        <Insets bottom="4.0" left="8.0" right="8.0" top="4.0"/>
-    </padding>
-</GridPane>
+</VBox>
