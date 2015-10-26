@@ -1,5 +1,6 @@
 package me.toxz.ftp.sample;
 
+import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.concurrent.Task;
@@ -9,6 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import me.toxz.ftp.model.FTPFile;
+import me.toxz.ftp.model.LocalFile;
 import me.toxz.ftp.model.User;
 import me.toxz.ftp.util.Log;
 
@@ -26,12 +28,13 @@ public class FileExplorerController implements Initializable {
     private Main application;
     private User user;
     private String currentRemoteDir = "";
+    private File currentLocalFile = new File(System.getProperty("user.dir"));
 
     @FXML Label localPathText;
     @FXML Label remotePathText;
     @FXML Label currentIPText;
     @FXML Button disconnectBtn;
-    @FXML ListView<FTPFile> localList;
+    @FXML ListView<LocalFile> localList;
     @FXML ListView<FTPFile> remoteList;
 
     @Override
@@ -55,19 +58,54 @@ public class FileExplorerController implements Initializable {
                 }
             }
         });
+        localList.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                LocalFile file = localList.getSelectionModel().getSelectedItem();
+                Log.i(TAG, "double clicked: " + file);
+                if (!changeLocalDirTo(file)) {
+                    Log.i(TAG, "double clicked, file: " + file);
+                }
+            }
+        });
 
-
+        changeLocalDirTo(new LocalFile(currentLocalFile));
         changeRemoteDirTo(null);
     }
 
+    private boolean changeLocalDirTo(@NotNull LocalFile file) {
+        if (file.isParent()) {
+            // navigation up rather than navigation down
+            LocalFile parentFile = file.getStoreParentFile();
+            updateFileContent(parentFile);
+            return true;
+        } else if (file.hasChild()) {
+            // navigation down
+            updateFileContent(file);
+            return true;
+        } else return false;// is a file
+    }
+
+    private void updateFileContent(@NotNull LocalFile file) {
+        List<LocalFile> localFiles = file.listLocalFiles();
+        if (!file.isRootParent()) {
+            // if can navigation up
+            localFiles.add(LocalFile.getParentFile(file.toFile()));
+        }
+        currentLocalFile = file.toFile();
+        Collections.sort(localFiles);
+        localList.setItems(new ObservableListWrapper<>(localFiles));
+        localPathText.setText(file.getPath());
+    }
+
     private boolean changeRemoteDirTo(@Nullable FTPFile file) {
-        if (file != null && !file.isDir()) {
+        if (file != null && !file.hasChild()) {
             return false;
         } else {
             new Thread(new UpdateRemoteListTask(file)).start();
             return true;
         }
     }
+
 
     private class UpdateRemoteListTask extends Task<UpdateRemoteListTask.Result> {
         private final @Nullable FTPFile mFile;
@@ -93,7 +131,7 @@ public class FileExplorerController implements Initializable {
             List<FTPFile> ftpFiles = FTPFile.formatAll(this.getValue().list, currentRemoteDir);
             if (mFile != null) {
                 currentRemoteDir = getValue().dir;
-                if (!mFile.isRootFile()) {
+                if (!mFile.isRootParent()) {
                     ftpFiles.add(FTPFile.getParentFile());
                 }
             }

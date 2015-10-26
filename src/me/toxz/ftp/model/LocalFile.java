@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Created by Carlos on 2015/10/27.
  */
-public class LocalFile {
+public class LocalFile extends TreeIterable<LocalFile> {
     private File mFile;
     private boolean mIsParentFile = false;
     public static final String PARENT_FILE_NAME = "..";
@@ -24,12 +24,34 @@ public class LocalFile {
         return PARENT_FILE;
     }
 
-    public boolean isRootFile() {
-        return mFile == null;
+    public LocalFile getStoreParentFile() {
+        return new LocalFile(mFile.getParentFile());
     }
 
-    public boolean isParentFile() {
+    public boolean isRootParent() {
+        return mFile.getParentFile() == null;
+    }
+
+    @Override
+    protected int hasChildCompareToHasChild(LocalFile o) {
+        return mFile.getName().length() - o.mFile.getName().length();
+    }
+
+    @Override
+    protected int basicCompareToBasic(LocalFile o) {
+        return mFile.getName().length() - o.mFile.getName().length();
+    }
+
+    public boolean isParent() {
         return mIsParentFile;
+    }
+
+    public File toFile() {
+        return mFile;
+    }
+
+    public String getPath() {
+        return mFile.getPath();
     }
 
     private LocalFile() {
@@ -52,14 +74,17 @@ public class LocalFile {
         return wrap(mFile.listFiles());
     }
 
-    public boolean isDirectory() {
-        return mFile.isDirectory();
+    public boolean hasChild() {
+        return isParent() || mFile.isDirectory();
     }
 
 
     @Override
     public String toString() {
-        return mFile.getName();
+        if (isParent()) {
+            return "..";
+        } else
+            return mFile.getName();
     }
 
     public static

@@ -14,7 +14,7 @@ import java.util.stream.StreamSupport;
 /**
  * Created by Carlos on 2015/10/26.
  */
-public class FTPFile implements Comparable<FTPFile> {
+public class FTPFile extends TreeIterable<FTPFile> {
     private final String name;
     private final String dir;
     private final boolean isDir;
@@ -29,8 +29,18 @@ public class FTPFile implements Comparable<FTPFile> {
         return PARENT_FILE;
     }
 
-    public boolean isRootFile() {
+    public boolean isRootParent() {
         return name.equals(PARENT_FILE_NAME);
+    }
+
+    @Override
+    protected int hasChildCompareToHasChild(FTPFile o) {
+        return o.name.length() - name.length();
+    }
+
+    @Override
+    protected int basicCompareToBasic(FTPFile o) {
+        return (int) (o.size - size);
     }
 
     private FTPFile(String name, String dir, boolean isDir, long size, String permission, String modifiedDate) {
@@ -42,7 +52,7 @@ public class FTPFile implements Comparable<FTPFile> {
         this.modifiedDate = modifiedDate;
     }
 
-    public boolean isParentFile() {
+    public boolean isParent() {
         return this.equals(PARENT_FILE);
     }
 
@@ -70,8 +80,8 @@ public class FTPFile implements Comparable<FTPFile> {
         return dir;
     }
 
-    public boolean isDir() {
-        return isDir;
+    public boolean hasChild() {
+        return isParent() || isDir;
     }
 
     public long getSize() {
@@ -88,7 +98,7 @@ public class FTPFile implements Comparable<FTPFile> {
 
     @Override
     public String toString() {
-        if (isParentFile()) {
+        if (isParent()) {
             return PARENT_FILE_NAME;
         } else
             return name;
@@ -100,23 +110,23 @@ public class FTPFile implements Comparable<FTPFile> {
         return StreamSupport.stream(spliterator, false).filter(s1 -> !s1.isEmpty()).map(s -> format(s, dir)).collect(Collectors.toList());
     }
 
-    @Override
-    public int compareTo(FTPFile o) {
-        if (isParentFile() && o.isParentFile())
-            return 0;
-        if (isParentFile())
-            return -1;
-        else if (o.isParentFile())
-            return 1;
-        if (isDir() && o.isDir()) {
-            return o.name.length() - name.length();
-        }
-        if (isDir()) {
-            return -1;
-        } else if (o.isDir()) {
-            return 1;
-        } else {
-            return (int) (o.size - size);
-        }
-    }
+//    @Override
+//    public int compareTo(FTPFile o) {
+//        if (isParentFile() && o.isParentFile())
+//            return 0;
+//        if (isParentFile())
+//            return -1;
+//        else if (o.isParentFile())
+//            return 1;
+//        if (isDir() && o.isDir()) {
+//            return o.name.length() - name.length();
+//        }
+//        if (isDir()) {
+//            return -1;
+//        } else if (o.isDir()) {
+//            return 1;
+//        } else {
+//            return (int) (o.size - size);
+//        }
+//    }
 }
