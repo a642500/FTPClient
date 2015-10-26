@@ -1,7 +1,11 @@
 package me.toxz.ftp.client;
 
+import me.toxz.ftp.util.Log;
+import sun.nio.ch.IOUtil;
+
 import java.io.*;
 import java.net.Socket;
+import java.util.Scanner;
 import java.util.StringTokenizer;
 
 /**
@@ -12,6 +16,8 @@ import java.util.StringTokenizer;
  * href="http://www.jibble.org/">http://www.jibble.org/ </a>
  */
 public class FTPClient {
+
+    private static final String TAG = "FTPClient";
 
     /**
      * Create an instance of SimpleFTP.
@@ -50,16 +56,19 @@ public class FTPClient {
                 new OutputStreamWriter(socket.getOutputStream()));
 
         String response = readLine();
-        if (!response.startsWith("220 ")) {
+        Log.i(TAG, "connect, " + response);
+        if (!response.startsWith("220 ") && !response.startsWith("220")) {
             throw new IOException(
                     "SimpleFTP received an unknown response when connecting to the FTP server: "
                             + response);
         }
 
+
+        Log.i(TAG, "USER login, " + user + " " + pass);
         sendLine("USER " + user);
 
-        response = readLine();
-        if (!response.startsWith("331 ")) {
+        Log.i(TAG, "USER, " + response);
+        if (!response.startsWith("331") && !response.startsWith("220")) {
             throw new IOException(
                     "SimpleFTP received an unknown response after sending the user: "
                             + response);
@@ -68,14 +77,32 @@ public class FTPClient {
         sendLine("PASS " + pass);
 
         response = readLine();
-        if (!response.startsWith("230 ")) {
+        Log.i(TAG, "PASS, " + response);
+        if (!response.startsWith("230") && !response.startsWith("220") && !response.startsWith("331")) {
             throw new IOException(
                     "SimpleFTP was unable to log in with the supplied password: "
                             + response);
         }
+        while (!response.startsWith("230")) {
+            response = readLine();
+            if (response.startsWith("530")) {
+                throw new IncorrectPasswordException("Login or password incorrect!");
+            }
+
+            Log.i(TAG, response);
+        }
+        Log.i(TAG, "logged");
+
 
         // Now logged in.
     }
+
+    public class IncorrectPasswordException extends IOException {
+        public IncorrectPasswordException(String message) {
+            super(message);
+        }
+    }
+
 
     /**
      * Disconnects from the FTP server.
@@ -117,13 +144,29 @@ public class FTPClient {
 
         String ip = readIP(response);
         int port = readPort(response);
+        Log.i(TAG, "ip: " + ip + ", port: " + port);
 
         Socket dataSocket = new Socket(ip, port);
 
-        sendLine("LIST");
+        sendLine("List");
         response = readLine();
+        Log.i(TAG, response);
+
+
+        BufferedInputStream input = new BufferedInputStream(dataSocket.getInputStream());
+        StringWriter stringWriter = new StringWriter();
+        Scanner s = new Scanner(input).useDelimiter("\\A");
+        String list = s.hasNext() ? s.next() : "";
+
+        stringWriter.flush();
+        stringWriter.close();
+        input.close();
+
+        Log.i(TAG, list);
         response = readLine();
-        return "";
+
+        Log.i(TAG, response);
+        return list;
     }
 
     /**
@@ -175,7 +218,11 @@ public class FTPClient {
             String dataLink = data.substring(opening + 1, closing);
             StringTokenizer tokenizer = new StringTokenizer(dataLink, ",");
             try {
+                for (int i = 0; i < 4; i++) {
+                    tokenizer.nextToken();
+                }
                 port = Integer.parseInt(tokenizer.nextToken()) * 256 + Integer.parseInt(tokenizer.nextToken());
+                Log.i(TAG, "port: " + port + ", data: " + data);
             } catch (Exception e) {
                 throw new IOException("SimpleFTP received bad data link information: " + data);
             }
