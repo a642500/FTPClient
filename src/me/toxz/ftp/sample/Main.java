@@ -63,6 +63,7 @@ public class Main extends Application {
         try {
             FileExplorerController controller = (FileExplorerController) replaceSceneContent("file_explorer.fxml");
             controller.setApp(this);
+            controller.init(mUser);
             mStage.setTitle("File Transfer");
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);

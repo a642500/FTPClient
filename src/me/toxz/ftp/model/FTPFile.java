@@ -48,14 +48,7 @@ public class FTPFile {
 
     @Override
     public String toString() {
-        return "FTPFile{" +
-                "name='" + name + '\'' +
-                ", dir='" + dir + '\'' +
-                ", isDir=" + isDir +
-                ", size=" + size +
-                ", permission='" + permission + '\'' +
-                ", modifiedDate='" + modifiedDate + '\'' +
-                '}';
+        return name;
     }
 
     public static List<FTPFile> formatAll(String string, String dir) {
