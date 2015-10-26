@@ -230,6 +230,42 @@ public class FTPClient {
         return port;
     }
 
+    public synchronized boolean retr(File outputFile, String filename) throws IOException {
+        sendLine("PASV");
+        String response = readLine();
+        if (!response.startsWith("227 ")) {
+            throw new IOException("SimpleFTP could not request passive mode: "
+                    + response);
+        }
+        String ip = readIP(response);
+        int port = readPort(response);
+
+        Socket dataSocket = new Socket(ip, port);
+
+        sendLine("RETR " + filename);
+        response = readLine();
+
+        if (!response.startsWith("125 ") && !response.startsWith("150 ")) {
+            //if (!response.startsWith("150 ")) {
+            throw new IOException("SimpleFTP was not allowed to download the file: "
+                    + response);
+        }
+
+        BufferedInputStream input = new BufferedInputStream(dataSocket.getInputStream());
+        FileOutputStream output = new FileOutputStream(outputFile);
+        byte[] buffer = new byte[4096];
+        int bytesRead;
+        while ((bytesRead = input.read(buffer)) != -1) {
+            output.write(buffer, 0, bytesRead);
+        }
+        output.flush();
+        output.close();
+        input.close();
+
+        response = readLine();
+        return response.startsWith("226 ");
+    }
+
     /**
      * Sends a file to be stored on the FTP server. Returns true if the file
      * transfer was successful. The file is sent in passive mode to avoid NAT or

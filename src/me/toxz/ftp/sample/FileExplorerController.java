@@ -158,6 +158,31 @@ public class FileExplorerController implements Initializable {
         Log.i(TAG, "start upload");
     }
 
+    public void download(ActionEvent event) {
+        final FTPFile ftpFile = remoteList.getSelectionModel().getSelectedItem();
+
+        Task<Boolean> downloadTask = new Task<Boolean>() {
+            @Override
+            protected Boolean call() throws Exception {
+                application.mClient.retr(new File(currentLocalFile, ftpFile.getName()), ftpFile.getName());
+                return true;
+            }
+
+            @Override
+            protected void succeeded() {
+                Log.i(TAG, "success");
+                changeLocalDirTo(new LocalFile(currentLocalFile));
+            }
+
+            @Override
+            protected void failed() {
+                Log.i(TAG, "failed");
+            }
+        };
+        new Thread(downloadTask).start();
+        Log.i(TAG, "start download");
+    }
+
 //    private static class ListViewCellFactory implements javafx.util.Callback<ListView<LocalFile>, ListCell<LocalFile>> {
 //
 //        @Override

@@ -84,7 +84,8 @@
                                 <Insets bottom="4.0"/>
                             </VBox.margin>
                         </Button>
-                        <Button mnemonicParsing="false" text="&lt;-" fx:id="downloadBtn" disable="true">
+                        <Button mnemonicParsing="false" text="&lt;-" fx:id="downloadBtn" disable="true"
+                                onAction="#download">
                             <VBox.margin>
                                 <Insets top="4.0"/>
                             </VBox.margin>
