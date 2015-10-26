@@ -37,4 +37,9 @@ public class FTPClientTest {
         System.out.println(FTPFile.formatAll(list, "/"));
     }
 
+//    @Test
+//    public void testPort() throws IOException {
+//        client.connect("127.0.0.1", 21);
+//    }
+
 }

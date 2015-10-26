@@ -55,6 +55,9 @@ public class FileExplorerController implements Initializable {
     void init(User u) {
         user = u;
         currentIPText.setText(user.getHost() + ": " + user.getPortValue());
+        methodToggleGroup.selectedToggleProperty().addListener((observable1, oldValue1, newValue1) -> {
+            application.mClient.setPassive(((RadioButton) methodToggleGroup.getSelectedToggle()).getText().equals("PRSV"));
+        });
         remoteList.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 FTPFile file = remoteList.getSelectionModel().getSelectedItem();

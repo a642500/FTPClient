@@ -1,9 +1,12 @@
 package me.toxz.ftp.client;
 
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import me.toxz.ftp.util.Log;
 import sun.nio.ch.IOUtil;
 
 import java.io.*;
+import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
 import java.util.StringTokenizer;
@@ -231,25 +234,8 @@ public class FTPClient {
     }
 
     public synchronized boolean retr(File outputFile, String filename) throws IOException {
-        sendLine("PASV");
-        String response = readLine();
-        if (!response.startsWith("227 ")) {
-            throw new IOException("SimpleFTP could not request passive mode: "
-                    + response);
-        }
-        String ip = readIP(response);
-        int port = readPort(response);
-
-        Socket dataSocket = new Socket(ip, port);
-
-        sendLine("RETR " + filename);
-        response = readLine();
-
-        if (!response.startsWith("125 ") && !response.startsWith("150 ")) {
-            //if (!response.startsWith("150 ")) {
-            throw new IOException("SimpleFTP was not allowed to download the file: "
-                    + response);
-        }
+        String response;
+        Socket dataSocket = setMode("RETR ", filename);
 
         BufferedInputStream input = new BufferedInputStream(dataSocket.getInputStream());
         FileOutputStream output = new FileOutputStream(outputFile);
@@ -266,6 +252,62 @@ public class FTPClient {
         return response.startsWith("226 ");
     }
 
+    public void setPassive(boolean isPassive) {
+        this.isPassive = isPassive;
+    }
+
+    private boolean isPassive = true;
+
+    private Socket setMode(String cmd, String filename) throws IOException {
+        String response;
+        Socket dataSocket;
+        if (isPassive) {
+            sendLine("PASV");
+            response = readLine();
+            if (!response.startsWith("227 ")) {
+                throw new IOException("SimpleFTP could not request passive mode: "
+                        + response);
+            }
+            String ip = readIP(response);
+            int port = readPort(response);
+
+            dataSocket = new Socket(ip, port);
+
+            sendLine(cmd + filename);
+            response = readLine();
+
+            if (!response.startsWith("125 ") && !response.startsWith("150 ")) {
+                //if (!response.startsWith("150 ")) {
+                throw new IOException("SimpleFTP was not allowed to download the file: "
+                        + response);
+            }
+        } else {
+            int upper = 182;
+            int lower = 23;
+            String ip = "127,0,0,1";
+            String port = ip + "," + upper + "," + lower;
+            Log.i(TAG, "port info: " + port);
+
+            sendLine("PORT " + port);
+            response = readLine();
+            Log.i(TAG, response);
+            //TODO check response
+
+            ServerSocket serverSocket = new ServerSocket(182 * 256 + 23);
+
+            sendLine(cmd + filename);
+
+
+            if (!response.startsWith("125 ") && !response.startsWith("200 ")) {
+                //if (!response.startsWith("150 ")) {
+                throw new IOException("SimpleFTP was not allowed to download the file: "
+                        + response);
+            }
+            dataSocket = serverSocket.accept();
+        }
+        return dataSocket;
+    }
+
     /**
      * Sends a file to be stored on the FTP server. Returns true if the file
      * transfer was successful. The file is sent in passive mode to avoid NAT or
@@ -273,33 +315,10 @@ public class FTPClient {
      */
     public synchronized boolean stor(InputStream inputStream, String filename)
             throws IOException {
+        Socket dataSocket = setMode("STOR ", filename);
 
+        BufferedOutputStream output = new BufferedOutputStream(dataSocket.getOutputStream());
         BufferedInputStream input = new BufferedInputStream(inputStream);
-
-        sendLine("PASV");
-        String response = readLine();
-        if (!response.startsWith("227 ")) {
-            throw new IOException("SimpleFTP could not request passive mode: "
-                    + response);
-        }
-
-        String ip = readIP(response);
-        int port = readPort(response);
-
-        Socket dataSocket = new Socket(ip, port);
-
-        sendLine("STOR " + filename);
-
-
-        response = readLine();
-        if (!response.startsWith("125 ") && !response.startsWith("150 ")) {
-            //if (!response.startsWith("150 ")) {
-            throw new IOException("SimpleFTP was not allowed to send the file: "
-                    + response);
-        }
-
-        BufferedOutputStream output = new BufferedOutputStream(dataSocket
-                .getOutputStream());
         byte[] buffer = new byte[4096];
         int bytesRead;
         while ((bytesRead = input.read(buffer)) != -1) {
@@ -309,7 +328,7 @@ public class FTPClient {
         output.close();
         input.close();
 
-        response = readLine();
+        String response = readLine();
         return response.startsWith("226 ");
     }
 
