@@ -91,18 +91,18 @@ public class FileExplorerController implements Initializable {
         remoteList.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 FTPFile file = remoteList.getSelectionModel().getSelectedItem();
-                Log.i(TAG, "double clicked: " + file);
+//                Log.i(TAG, "double clicked: " + file);
                 if (!changeRemoteDirTo(file)) {
-                    Log.i(TAG, "double clicked, file: " + file);
+//                    Log.i(TAG, "double clicked, file: " + file);
                 }
             }
         });
         localList.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 LocalFile file = localList.getSelectionModel().getSelectedItem();
-                Log.i(TAG, "double clicked: " + file);
+//                Log.i(TAG, "double clicked: " + file);
                 if (!changeLocalDirTo(file)) {
-                    Log.i(TAG, "double clicked, file: " + file);
+//                    Log.i(TAG, "double clicked, file: " + file);
                 }
             }
         });

@@ -61,7 +61,6 @@ public class TimeoutExecutor {
         @Override
         public void run() {
             while (!isInterrupted()) {
-                Log.i(TAG, "check time out");
                 if (mTaskList != null) {
                     long now = System.currentTimeMillis();
                     mTaskList.stream().filter(pair -> pair.getKey() < now && !pair.getValue().isDone()).forEach(pair -> {

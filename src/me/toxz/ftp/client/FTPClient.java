@@ -12,8 +12,8 @@ import java.util.Scanner;
 import java.util.StringTokenizer;
 
 /**
- * SimpleFTP is a simple package that implements a Java FTP client. With
- * SimpleFTP, you can connect to an FTP server and upload multiple files.
+ * FTPClient is a simple package that implements a Java FTP client. With
+ * FTPClient, you can connect to an FTP server and upload multiple files.
  * <p>
  * Copyright Paul Mutton, <a
  * href="http://www.jibble.org/">http://www.jibble.org/ </a>
@@ -23,7 +23,7 @@ public class FTPClient {
     private static final String TAG = "FTPClient";
 
     /**
-     * Create an instance of SimpleFTP.
+     * Create an instance of FTPClient.
      */
     public FTPClient() {
 
@@ -51,39 +51,37 @@ public class FTPClient {
     public synchronized void connect(String host, int port, String user,
                                      String pass) throws IOException {
         if (socket != null) {
-            throw new IOException("SimpleFTP is already connected. Disconnect first.");
+            throw new IOException("FTPClient is already connected. Disconnect first.");
         }
         socket = new Socket(host, port);
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         writer = new BufferedWriter(
                 new OutputStreamWriter(socket.getOutputStream()));
-
         String response = readLine();
         Log.i(TAG, "connect, " + response);
         if (!response.startsWith("220 ") && !response.startsWith("220")) {
             throw new IOException(
-                    "SimpleFTP received an unknown response when connecting to the FTP server: "
+                    "FTPClient received an unknown response when connecting to the FTP server: "
                             + response);
         }
 
-
-        Log.i(TAG, "USER login, " + user + " " + pass);
+        Log.i(TAG, "USER , " + user + " " + pass);
         sendLine("USER " + user);
 
         Log.i(TAG, "USER, " + response);
         if (!response.startsWith("331") && !response.startsWith("220")) {
             throw new IOException(
-                    "SimpleFTP received an unknown response after sending the user: "
+                    "FTPClient received an unknown response after sending the user: "
                             + response);
         }
 
         sendLine("PASS " + pass);
-
+        Log.i(TAG, "PASS, " + pass);
         response = readLine();
         Log.i(TAG, "PASS, " + response);
         if (!response.startsWith("230") && !response.startsWith("220") && !response.startsWith("331")) {
             throw new IOException(
-                    "SimpleFTP was unable to log in with the supplied password: "
+                    "FTPClient was unable to log in with the supplied password: "
                             + response);
         }
         while (!response.startsWith("230")) {
@@ -112,6 +110,7 @@ public class FTPClient {
      */
     public synchronized void disconnect() throws IOException {
         try {
+            Log.i(TAG, "QUIT");
             sendLine("QUIT");
         } finally {
             socket = null;
@@ -123,8 +122,10 @@ public class FTPClient {
      */
     public synchronized String pwd() throws IOException {
         sendLine("PWD");
+        Log.i(TAG, "PWD");
         String dir = null;
         String response = readLine();
+        Log.i(TAG, "PASV");
         if (response.startsWith("257 ")) {
             int firstQuote = response.indexOf('\"');
             int secondQuote = response.indexOf('\"', firstQuote + 1);
@@ -138,9 +139,11 @@ public class FTPClient {
 
     public synchronized String list() throws IOException {
         sendLine("PASV");
+        Log.i(TAG, "PASV");
         String response = readLine();
+        Log.i(TAG, response);
         if (!response.startsWith("227 ")) {
-            throw new IOException("SimpleFTP could not request passive mode: "
+            throw new IOException("FTPClient could not request passive mode: "
                     + response);
         }
 
@@ -168,7 +171,7 @@ public class FTPClient {
         Log.i(TAG, list);
         response = readLine();
 
-        Log.i(TAG, response);
+//        Log.i(TAG, response);
         return list;
     }
 
@@ -176,8 +179,10 @@ public class FTPClient {
      * Changes the working directory (like cd). Returns true if successful.
      */
     public synchronized boolean cwd(String dir) throws IOException {
+        Log.i(TAG, "CWD");
         sendLine("CWD " + dir);
         String response = readLine();
+        Log.i(TAG, response);
         return (response.startsWith("250 "));
     }
 
@@ -188,7 +193,7 @@ public class FTPClient {
      */
     public synchronized boolean stor(File file) throws IOException {
         if (file.isDirectory()) {
-            throw new IOException("SimpleFTP cannot upload a directory.");
+            throw new IOException("FTPClient cannot upload a directory.");
         }
 
         String filename = file.getName();
@@ -207,7 +212,7 @@ public class FTPClient {
                 ip = tokenizer.nextToken() + "." + tokenizer.nextToken() + "."
                         + tokenizer.nextToken() + "." + tokenizer.nextToken();
             } catch (Exception e) {
-                throw new IOException("SimpleFTP received bad data link information: " + data);
+                throw new IOException("FTPClient received bad data link information: " + data);
             }
         }
         return ip;
@@ -227,7 +232,7 @@ public class FTPClient {
                 port = Integer.parseInt(tokenizer.nextToken()) * 256 + Integer.parseInt(tokenizer.nextToken());
                 Log.i(TAG, "port: " + port + ", data: " + data);
             } catch (Exception e) {
-                throw new IOException("SimpleFTP received bad data link information: " + data);
+                throw new IOException("FTPClient received bad data link information: " + data);
             }
         }
         return port;
@@ -262,23 +267,26 @@ public class FTPClient {
         String response;
         Socket dataSocket;
         if (isPassive) {
+            Log.i(TAG, "PASV");
             sendLine("PASV");
             response = readLine();
+            Log.i(TAG, "PASV");
             if (!response.startsWith("227 ")) {
-                throw new IOException("SimpleFTP could not request passive mode: "
+                throw new IOException("FTPClient could not request passive mode: "
                         + response);
             }
             String ip = readIP(response);
             int port = readPort(response);
 
             dataSocket = new Socket(ip, port);
-
+            Log.i(TAG, cmd);
             sendLine(cmd + filename);
             response = readLine();
+            Log.i(TAG, "PASV");
 
             if (!response.startsWith("125 ") && !response.startsWith("150 ")) {
                 //if (!response.startsWith("150 ")) {
-                throw new IOException("SimpleFTP was not allowed to download the file: "
+                throw new IOException("FTPClient was not allowed to download the file: "
                         + response);
             }
         } else {
@@ -287,7 +295,7 @@ public class FTPClient {
             String ip = "127,0,0,1";
             String port = ip + "," + upper + "," + lower;
             Log.i(TAG, "port info: " + port);
-
+            Log.i(TAG, "PORT");
             sendLine("PORT " + port);
             response = readLine();
             Log.i(TAG, response);
@@ -297,10 +305,9 @@ public class FTPClient {
 
             sendLine(cmd + filename);
 
-
             if (!response.startsWith("125 ") && !response.startsWith("200 ")) {
                 //if (!response.startsWith("150 ")) {
-                throw new IOException("SimpleFTP was not allowed to download the file: "
+                throw new IOException("FTPClient was not allowed to download the file: "
                         + response);
             }
             dataSocket = serverSocket.accept();
@@ -357,7 +364,7 @@ public class FTPClient {
      */
     private void sendLine(String line) throws IOException {
         if (socket == null) {
-            throw new IOException("SimpleFTP is not connected.");
+            throw new IOException("FTPClient is not connected.");
         }
         try {
             writer.write(line + "\r\n");

@@ -68,7 +68,7 @@ public class FTPFile extends TreeIterable<FTPFile> {
         String name = info.next();
         boolean isDir = permission.contains("d");
         FTPFile ftpFile = new FTPFile(name, dir, isDir, size, permission, date);
-        System.out.println(ftpFile);
+//        System.out.println(ftpFile);
         return ftpFile;
     }
 
