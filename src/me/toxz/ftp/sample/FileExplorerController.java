@@ -11,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.util.Callback;
+import me.toxz.ftp.client.TimeoutExecutor;
 import me.toxz.ftp.model.FTPFile;
 import me.toxz.ftp.model.LocalFile;
 import me.toxz.ftp.model.User;
@@ -22,6 +23,7 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.Executor;
 
 /**
  * Created by Carlos on 2015/10/23.
@@ -42,6 +44,7 @@ public class FileExplorerController implements Initializable {
     @FXML ToggleGroup methodToggleGroup;
     @FXML Button uploadBtn;
     @FXML Button downloadBtn;
+    private int connectTimes = 0;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -52,7 +55,34 @@ public class FileExplorerController implements Initializable {
         this.application = application;
     }
 
+    private class ReconnectTask extends Task<Boolean> {
+        @Override
+        protected java.lang.Boolean call() throws Exception {
+            Log.i(TAG, "reconnect...");
+            application.mClient.connect(user.getHost(), user.getPortValue(), user.getUserName(), user.getPassword());
+            return true;
+        }
+
+        @Override
+        protected void failed() {
+            Log.i(TAG, "reconnect failed");
+            connectTimes++;
+        }
+
+        @Override
+        protected void succeeded() {
+            Log.i(TAG, "reconnect succeed");
+            connectTimes = 0;
+        }
+    }
+
     void init(User u) {
+        TimeoutExecutor.setTimeoutCallback(future -> {
+            future.cancel(true);
+            if (connectTimes < 5) {
+                TimeoutExecutor.submit(new ReconnectTask(), 4000);
+            }//TODO unable connect!
+        });
         user = u;
         currentIPText.setText(user.getHost() + ": " + user.getPortValue());
         methodToggleGroup.selectedToggleProperty().addListener((observable1, oldValue1, newValue1) -> {
@@ -122,7 +152,7 @@ public class FileExplorerController implements Initializable {
         if (file != null && !file.hasChild()) {
             return false;
         } else {
-            new Thread(new UpdateRemoteListTask(file)).start();
+            TimeoutExecutor.submit(new UpdateRemoteListTask(file), 3 * 1000);
             return true;
         }
     }
@@ -155,6 +185,7 @@ public class FileExplorerController implements Initializable {
             @Override
             protected void failed() {
                 Log.i(TAG, "failed");
+                TimeoutExecutor.submit(new ReconnectTask(), 3000);
             }
         };
         new Thread(uploadTask).start();
@@ -180,6 +211,7 @@ public class FileExplorerController implements Initializable {
             @Override
             protected void failed() {
                 Log.i(TAG, "failed");
+                TimeoutExecutor.submit(new ReconnectTask(), 3000);
             }
         };
         new Thread(downloadTask).start();
@@ -254,7 +286,8 @@ public class FileExplorerController implements Initializable {
 
         @Override
         protected void failed() {
-            super.failed();
+            Log.i(TAG, "failed");
+            TimeoutExecutor.submit(new ReconnectTask(), 3000);
         }
 
         public class Result {

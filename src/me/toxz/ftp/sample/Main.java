@@ -13,6 +13,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import me.toxz.ftp.client.FTPClient;
+import me.toxz.ftp.client.TimeoutExecutor;
 import me.toxz.ftp.model.User;
 
 import java.io.IOException;
@@ -85,6 +86,7 @@ public class Main extends Application {
 
     public static void main(String[] args) {
         launch(args);
+        TimeoutExecutor.exit();
     }
 
 
